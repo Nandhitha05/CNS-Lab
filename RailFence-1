@@ -1,0 +1,71 @@
+public class RailFenceCipher {
+
+    // Encrypt using row-column (rail fence style) with given depth
+    static String encode(String msg, int depth) {
+        int r = depth;
+        int l = msg.length();
+        int c = (l + r - 1) / r;      // number of columns (ceiling)
+
+        char[][] mat = new char[r][c];
+        int k = 0;
+
+        // fill column-wise
+        for (int j = 0; j < c; j++) {
+            for (int i = 0; i < r; i++) {
+                if (k < l)
+                    mat[i][j] = msg.charAt(k++);
+                else
+                    mat[i][j] = 'X';  // padding
+            }
+        }
+
+        // read row-wise
+        String enc = "";
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                enc += mat[i][j];
+            }
+        }
+        return enc;
+    }
+
+    // Decrypt (reverse of above)
+    static String decode(String enc, int depth) {
+        int r = depth;
+        int l = enc.length();
+        int c = l / r;
+
+        char[][] mat = new char[r][c];
+        int k = 0;
+
+        // fill row-wise
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                mat[i][j] = enc.charAt(k++);
+            }
+        }
+
+        // read column-wise
+        String dec = "";
+        for (int j = 0; j < c; j++) {
+            for (int i = 0; i < r; i++) {
+                dec += mat[i][j];
+            }
+        }
+        return dec;
+    }
+
+    public static void main(String[] args) {
+        String msg = "Anna University, Chennai";
+        int depth = 2;
+
+        String enc = encode(msg, depth);
+        String dec = decode(enc, depth);
+
+        System.out.println("RAIL FENCE CIPHER");
+        System.out.println("-----------------");
+        System.out.println("Input     : " + msg);
+        System.out.println("Encrypted : " + enc);
+        System.out.println("Decrypted : " + dec);
+    }
+}
