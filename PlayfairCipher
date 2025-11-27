@@ -1,0 +1,107 @@
+import java.awt.Point;
+
+public class PlayfairCipher {
+
+    private static char[][] charTable;
+    private static Point[] positions;
+
+    // Prepare text: uppercase, remove non-letters, handle J/I or Q
+    private static String prepareText(String s, boolean changeJtoI) {
+        s = s.toUpperCase().replaceAll("[^A-Z]", "");   // keep only A–Z
+        return changeJtoI ? s.replace('J', 'I') : s.replace("Q", "");
+    }
+
+    // Create 5x5 key table from key + alphabet
+    private static void createTable(String key, boolean changeJtoI) {
+        charTable = new char[5][5];
+        positions = new Point[26];
+
+        String s = prepareText(key + "ABCDEFGHIJKLMNOPQRSTUVWXYZ", changeJtoI);
+        int len = s.length();
+
+        for (int i = 0, k = 0; i < len; i++) {
+            char c = s.charAt(i);
+            if (positions[c - 'A'] == null) {          // not yet used
+                charTable[k / 5][k % 5] = c;
+                positions[c - 'A'] = new Point(k % 5, k / 5);
+                k++;
+            }
+        }
+    }
+
+    // Core encoder/decoder (dir = 1 for enc, 4 for dec)
+    private static String codec(StringBuilder txt, int dir) {
+        int len = txt.length();
+
+        for (int i = 0; i < len; i += 2) {
+            char a = txt.charAt(i);
+            char b = txt.charAt(i + 1);
+
+            int row1 = positions[a - 'A'].y;
+            int row2 = positions[b - 'A'].y;
+            int col1 = positions[a - 'A'].x;
+            int col2 = positions[b - 'A'].x;
+
+            if (row1 == row2) {
+                // same row – shift columns
+                col1 = (col1 + dir) % 5;
+                col2 = (col2 + dir) % 5;
+            } else if (col1 == col2) {
+                // same column – shift rows
+                row1 = (row1 + dir) % 5;
+                row2 = (row2 + dir) % 5;
+            } else {
+                // rectangle – swap columns
+                int tmp = col1;
+                col1 = col2;
+                col2 = tmp;
+            }
+
+            txt.setCharAt(i,     charTable[row1][col1]);
+            txt.setCharAt(i + 1, charTable[row2][col2]);
+        }
+        return txt.toString();
+    }
+
+    // Encrypt
+    private static String encode(String s) {
+        StringBuilder sb = new StringBuilder(s);
+
+        for (int i = 0; i < sb.length(); i += 2) {
+            if (i == sb.length() - 1) {
+                // last single character → pad with X
+                sb.append('X');
+            } else if (sb.charAt(i) == sb.charAt(i + 1)) {
+                // same letters in a pair → insert X after first
+                sb.insert(i + 1, 'X');
+            }
+        }
+
+        return codec(sb, 1);
+    }
+
+    // Decrypt
+    private static String decode(String s) {
+        return codec(new StringBuilder(s), 4);  // 4 ≡ -1 (mod 5)
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        String key = "CSE";
+        String txt = "Security Lab";
+        boolean changeJtoI = true;
+
+        createTable(key, changeJtoI);
+        String prepared = prepareText(txt, changeJtoI);
+        String enc = encode(prepared);
+        String dec = decode(enc);
+
+        System.out.println("Simulating Playfair Cipher");
+        System.out.println("--------------------------");
+        System.out.println("Input Message    : " + txt);
+        System.out.println("Prepared Message : " + prepared);
+        System.out.println("Encrypted Message: " + enc);
+        System.out.println("Decrypted Message: " + dec);
+    }
+}
+
