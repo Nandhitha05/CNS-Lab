@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RSA Encryption</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<center>
+    <h1>RSA Algorithm</h1>
+    <h2>Implemented Using HTML &amp; JavaScript</h2>
+    <hr>
+    <table>
+        <tr>
+            <td>Enter First Prime Number:</td>
+            <td><input type="number" value="53" id="p"></td>
+        </tr>
+        <tr>
+            <td>Enter Second Prime Number:</td>
+            <td><input type="number" value="59" id="q"></td>
+        </tr>
+        <tr>
+            <td>Enter the Message (plaintext number):<br>[A=1, B=2, ...]</td>
+            <td><input type="number" value="89" id="msg"></td>
+        </tr>
+        <tr>
+            <td>Public Key (n):</td>
+            <td><p id="publickey"></p></td>
+        </tr>
+        <tr>
+            <td>Public Exponent (e):</td>
+            <td><p id="exponent"></p></td>
+        </tr>
+        <tr>
+            <td>Private Key (d):</td>
+            <td><p id="privatekey"></p></td>
+        </tr>
+        <tr>
+            <td>Cipher Text (C):</td>
+            <td><p id="ciphertext"></p></td>
+        </tr>
+        <tr>
+            <td>Decrypted Message (M):</td>
+            <td><p id="decrypted"></p></td>
+        </tr>
+        <tr>
+            <td><button onclick="RSA();">Apply RSA</button></td>
+        </tr>
+    </table>
+</center>
+
+<script type="text/javascript">
+function RSA() {
+    var gcd, p, q, no, n, t, e, i, x, d;
+    gcd = function (a, b) { return (!b) ? a : gcd(b, a % b); };
+
+    // read input values as numbers
+    p  = parseInt(document.getElementById('p').value, 10);
+    q  = parseInt(document.getElementById('q').value, 10);
+    no = parseInt(document.getElementById('msg').value, 10);
+
+    // RSA key generation
+    n = p * q;
+    t = (p - 1) * (q - 1);    // phi(n)
+
+    // find e such that gcd(e, t) = 1
+    for (e = 2; e < t; e++) {
+        if (gcd(e, t) == 1) {
+            break;
+        }
+    }
+
+    // find d such that (d * e) ≡ 1 (mod t)
+    for (i = 0; i < 100; i++) {
+        x = 1 + i * t;
+        if (x % e == 0) {
+            d = x / e;
+            break;
+        }
+    }
+
+    // encryption: C = M^e mod n
+    var ctt = Math.pow(no, e);
+    var ct  = ctt % n;
+
+    // decryption: M = C^d mod n
+    var dtt = Math.pow(ct, d);
+    var dt  = dtt % n;
+
+    // display results
+    document.getElementById('publickey').innerHTML = n;
+    document.getElementById('exponent').innerHTML = e;
+    document.getElementById('privatekey').innerHTML = d;
+    document.getElementById('ciphertext').innerHTML = ct;
+    document.getElementById('decrypted').innerHTML = dt;
+}
+</script>
+</body>
+</html>
