@@ -1,0 +1,41 @@
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.util.Base64;
+import java.util.Scanner;
+
+public class CreatingDigitalSignature {
+
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter some text:");
+        String msg = sc.nextLine();
+        sc.close();
+
+        // 1. Generate DSA key pair
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
+        keyGen.initialize(2048);
+        KeyPair pair = keyGen.generateKeyPair();
+        PrivateKey privKey = pair.getPrivate();
+
+        // 2. Create Signature object with SHA-256 + DSA
+        Signature sign = Signature.getInstance("SHA256withDSA");
+
+        // 3. Initialize for signing using private key
+        sign.initSign(privKey);
+
+        // 4. Supply the data (user message)
+        sign.update(msg.getBytes());
+
+        // 5. Generate digital signature
+        byte[] signature = sign.sign();
+
+        // 6. Print signature in Base64 so it looks readable
+        String sigBase64 = Base64.getEncoder().encodeToString(signature);
+
+        System.out.println("Digital signature for given text:");
+        System.out.println(sigBase64);
+    }
+}
