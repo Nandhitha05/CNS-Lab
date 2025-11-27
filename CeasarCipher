@@ -1,0 +1,39 @@
+public class CaesarCipher {
+
+    // Encrypt text using given shift
+    public static String encode(String text, int shift) {
+        shift = ((shift % 26) + 26) % 26;   // normalize shift
+        StringBuilder result = new StringBuilder();
+
+        for (char ch : text.toCharArray()) {
+            if (ch >= 'A' && ch <= 'Z') {
+                result.append((char) ('A' + (ch - 'A' + shift) % 26));
+            } else if (ch >= 'a' && ch <= 'z') {
+                result.append((char) ('a' + (ch - 'a' + shift) % 26));
+            } else {
+                result.append(ch); // keep spaces, punctuation as it is
+            }
+        }
+        return result.toString();
+    }
+
+    // Decrypt = encode with (26 - shift)
+    public static String decode(String text, int shift) {
+        return encode(text, 26 - shift);
+    }
+
+    public static void main(String[] args) {
+        String msg = "Anna University";
+        int shift = 3;
+
+        System.out.println("CAESAR CIPHER");
+        System.out.println("-------------");
+        System.out.println("Input     : " + msg);
+
+        String enc = encode(msg, shift);
+        System.out.println("Encrypted : " + enc);
+
+        String dec = decode(enc, shift);
+        System.out.println("Decrypted : " + dec);
+    }
+}
