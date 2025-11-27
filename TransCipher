@@ -1,0 +1,43 @@
+import java.util.Scanner;
+
+public class TransCipher {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the plain text:");
+        String pl = sc.nextLine();
+        sc.close();
+
+        // remove spaces
+        String s = pl.replaceAll("\\s+", "");   // "Security Lab" -> "SecurityLab"
+        System.out.println("Plain (no spaces): " + s);
+
+        int col = 4;                            // fixed number of columns
+        int len = s.length();
+        int row = (len + col - 1) / col;        // ceiling(len / col)
+
+        char[][] mat = new char[row][col];
+        int k = 0;
+
+        // fill row-wise
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (k < len)
+                    mat[i][j] = s.charAt(k++);
+                else
+                    mat[i][j] = '#';           // padding
+            }
+        }
+
+        // read column-wise as cipher
+        String cipher = "";
+        for (int j = 0; j < col; j++) {
+            for (int i = 0; i < row; i++) {
+                cipher += mat[i][j];
+            }
+        }
+
+        System.out.println("Cipher text: " + cipher);
+    }
+}
