@@ -1,0 +1,60 @@
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
+
+public class AES {
+
+    private static SecretKeySpec secretKey;
+
+    // derive 128-bit AES key from a String
+    private static void setKey(String myKey) throws Exception {
+        byte[] key = myKey.getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        key = sha.digest(key);              // 20 bytes
+        key = Arrays.copyOf(key, 16);       // use first 16 bytes (128-bit key)
+        secretKey = new SecretKeySpec(key, "AES");
+    }
+
+    public static String encrypt(String plain, String key) {
+        try {
+            setKey(key);
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] encBytes = cipher.doFinal(plain.getBytes("UTF-8"));
+            return Base64.getEncoder().encodeToString(encBytes);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String decrypt(String cipherText, String key) {
+        try {
+            setKey(key);
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            byte[] decBytes = cipher.doFinal(Base64.getDecoder().decode(cipherText));
+            return new String(decBytes);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        String secretKey = "annaUniversity";
+        String url = "www.annauniv.edu";
+
+        String enc = encrypt(url, secretKey);
+        String dec = decrypt(enc, secretKey);
+
+        System.out.println("URL Encryption Using AES");
+        System.out.println("------------------------");
+        System.out.println("Original URL : " + url);
+        System.out.println("Encrypted URL: " + enc);
+        System.out.println("Decrypted URL: " + dec);
+    }
+}
