@@ -1,0 +1,39 @@
+public class DiffieHellman {
+
+    public static void main(String[] args) {
+
+        int p = 23;   // public prime
+        int g = 5;    // public primitive root
+
+        int a = 4;    // Alice's secret
+        int b = 3;    // Bob's secret
+
+        // Alice computes A = g^a mod p
+        int A = (int)(Math.pow(g, a) % p);
+
+        // Bob computes B = g^b mod p
+        int B = (int)(Math.pow(g, b) % p);
+
+        // Alice computes shared key: s = B^a mod p
+        int aliceSecret = (int)(Math.pow(B, a) % p);
+
+        // Bob computes shared key: s = A^b mod p
+        int bobSecret = (int)(Math.pow(A, b) % p);
+
+        System.out.println("Diffie-Hellman Key Exchange");
+        System.out.println("---------------------------");
+        System.out.println("Public prime (p) : " + p);
+        System.out.println("Public base (g)  : " + g);
+        System.out.println("Alice sends A    : " + A);
+        System.out.println("Bob sends B      : " + B);
+        System.out.println("Alice computes s : " + aliceSecret);
+        System.out.println("Bob computes s   : " + bobSecret);
+
+        if (aliceSecret == bobSecret) {
+            System.out.println("Shared Secret    : " + aliceSecret);
+            System.out.println("Success: Shared secrets match!");
+        } else {
+            System.out.println("Error: Shared secrets do NOT match!");
+        }
+    }
+}
