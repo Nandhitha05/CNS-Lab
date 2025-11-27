@@ -1,0 +1,56 @@
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingEx  ception;
+import javax.crypto.SecretKey;
+
+
+public class DES {
+
+    public static void main(String[] args) {
+
+        try {
+            System.out.println("DES ENCRYPTION & DECRYPTION");
+            System.out.println("----------------------------");
+
+            // Generate DES key
+            KeyGenerator kg = KeyGenerator.getInstance("DES");
+            SecretKey key = kg.generateKey();
+
+            // Create DES cipher (ECB mode, PKCS5 padding)
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+
+            // Message
+            String msg = "Secret Information";
+            byte[] msgBytes = msg.getBytes();
+
+            System.out.println("Original Message : " + msg);
+
+            // Encrypt
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] encrypted = cipher.doFinal(msgBytes);
+            System.out.println("Encrypted (bytes): " + encrypted);
+
+            // Decrypt
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] decrypted = cipher.doFinal(encrypted);
+            System.out.println("Decrypted Message: " + new String(decrypted));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }catch(NoSuchAlgorithmException e){
+e.printStackTrace();
+}catch(NoSuchPaddingException e){
+e.printStackTrace();
+}catch(InvalidKeyException e){
+e.printStackTrace();
+}catch(IllegalBlockSizeException e){
+e.printStackTrace();
+}catch(BadPaddingException e){
+e.printStackTrace();
+}
+    }
+}
