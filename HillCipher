@@ -1,0 +1,82 @@
+public class HillCipher {
+
+    // 3x3 key matrix
+    static int[][] K = {
+        {1, 2, 1},
+        {2, 3, 2},
+        {2, 2, 1}
+    };
+
+    // inverse key matrix (mod 26)
+    static int[][] K_INV = {
+        {-1, 0, 1},
+        { 2,-1, 0},
+        {-2, 2,-1}
+    };
+
+    static String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    // Encrypt one block of 3 chars
+    static String encBlock(char a, char b, char c) {
+        int x = a - 'A';
+        int y = b - 'A';
+        int z = c - 'A';
+
+        int r1 = x*K[0][0] + y*K[1][0] + z*K[2][0];
+        int r2 = x*K[0][1] + y*K[1][1] + z*K[2][1];
+        int r3 = x*K[0][2] + y*K[1][2] + z*K[2][2];
+
+        char c1 = ALPHA.charAt(((r1 % 26) + 26) % 26);
+        char c2 = ALPHA.charAt(((r2 % 26) + 26) % 26);
+        char c3 = ALPHA.charAt(((r3 % 26) + 26) % 26);
+
+        return "" + c1 + c2 + c3;
+    }
+
+    // Decrypt one block of 3 chars
+    static String decBlock(char a, char b, char c) {
+        int x = a - 'A';
+        int y = b - 'A';
+        int z = c - 'A';
+
+        int r1 = x*K_INV[0][0] + y*K_INV[1][0] + z*K_INV[2][0];
+        int r2 = x*K_INV[0][1] + y*K_INV[1][1] + z*K_INV[2][1];
+        int r3 = x*K_INV[0][2] + y*K_INV[1][2] + z*K_INV[2][2];
+
+        char c1 = ALPHA.charAt(((r1 % 26) + 26) % 26);
+        char c2 = ALPHA.charAt(((r2 % 26) + 26) % 26);
+        char c3 = ALPHA.charAt(((r3 % 26) + 26) % 26);
+
+        return "" + c1 + c2 + c3;
+    }
+
+    public static void main(String[] args) {
+
+        String msg = "SecurityLaboratory";
+        msg = msg.toUpperCase().replaceAll("\\s", "");  // remove spaces
+
+        int r = msg.length() % 3;
+        if (r != 0) {                    // padding with X
+            for (int i = 0; i < 3 - r; i++)
+                msg += "X";
+        }
+
+        String enc = "";
+        String dec = "";
+
+        for (int i = 0; i < msg.length(); i += 3) {
+            enc += encBlock(msg.charAt(i), msg.charAt(i+1), msg.charAt(i+2));
+        }
+
+        for (int i = 0; i < enc.length(); i += 3) {
+            dec += decBlock(enc.charAt(i), enc.charAt(i+1), enc.charAt(i+2));
+        }
+
+        System.out.println("HILL CIPHER");
+        System.out.println("-----------");
+        System.out.println("Input    : " + "SecurityLaboratory");
+        System.out.println("Padded   : " + msg);
+        System.out.println("Encoded  : " + enc);
+        System.out.println("Decoded  : " + dec);
+    }
+}
